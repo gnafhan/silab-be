@@ -35,6 +35,8 @@ Route::get('/', function(){
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::get('landingpage', [LandingpageController::class, 'index'])->name('landingpage');
+Route::get('check-auth', [AuthController::class, 'checkAuth'])->name('checkAuth');
+Route::post('update/profil', [AuthController::class, 'updateProfil'])->name('updateProfil');
 
 // Laboratorium
 Route::get('laboratorium', [LaboratoriumController::class, 'index'])->name('laboratorium');
