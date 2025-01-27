@@ -47,7 +47,7 @@ Route::apiResource('rules', ReserveRuleController::class);
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/email/verification-link', [EmailVerificationController::class, 'getVerificationLink']);
-    Route::get('verify-email/{id}/{hash}', [EmailVerificationController::class, 'verify'])->name('verification.verify');
+    // Route::get('verify-email/{id}/{hash}', [EmailVerificationController::class, 'verify'])->name('verification.verify');
     Route::post('/email/verification-notification', [EmailVerificationController::class, 'sendVerificationEmail']);
 });
 
