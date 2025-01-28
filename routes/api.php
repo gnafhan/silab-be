@@ -35,9 +35,14 @@ Route::get('/', function(){
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::get('landingpage', [LandingpageController::class, 'index'])->name('landingpage');
+Route::get('check-auth', [AuthController::class, 'checkAuth'])->name('checkAuth');
+Route::post('update/profil', [AuthController::class, 'updateProfil'])->name('updateProfil');
 
 // Laboratorium
 Route::get('laboratorium', [LaboratoriumController::class, 'index'])->name('laboratorium');
+Route::get('laboratorium/all-reserve', [LaboratoriumController::class, 'allReserve'])->name('laboratorium.allReserve');
+Route::get('laboratorium/reserve/search/{query?}', [LaboratoriumController::class, 'searchReservations']);
+Route::get('laboratorium/reserve/{id}', [LaboratoriumController::class, 'reservebyId'])->name('laboratorium.reservebyId');
 Route::get('laboratorium/{id}', [LaboratoriumController::class, 'detail'])->name('laboratorium.detail');
 
 // Rules
@@ -82,6 +87,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('inventory/reserve', [InventoryReserfController::class, 'getReserve'])->name('inventory.reserves');
     Route::post('inventory/reserve', [InventoryReserfController::class, 'inventoryReserve'])->name('inventory.reserve');
 });
+    // Route::get('laboratorium/all-reserve', [LaboratoriumController::class, 'allReserve'])->name('laboratorium.allReserve');
+
 
 Route::middleware(['auth:sanctum', 'verified', 'admin'])->group(function () {
     // Manajemen CRUD
