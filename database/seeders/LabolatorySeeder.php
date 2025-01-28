@@ -10,10 +10,11 @@ class LabolatorySeeder extends Seeder
     public function run()
     {
         $laboratories = [
-            ['name' => 'Computer Lab'],
-            ['name' => 'Physics Lab'],
-            ['name' => 'Chemistry Lab'],
-            ['name' => 'Biology Lab'],
+            ['name' => 'Laboratorium Rekayasa Perangkat Lunak (RPL)'],
+            ['name' => 'Laboratorium Instrumentasi dan Kendali (IDK)'],
+            ['name' => 'Laboratorium Teknologi dan Aplikasi Jaringan (TAJ)'],
+            ['name' => 'Laboratorium Elektronika'],
+            ['name' => 'Laboratorium Teknik Tenaga Listrik (TL)']
         ];
 
         foreach ($laboratories as $lab) {
