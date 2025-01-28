@@ -30,6 +30,9 @@ export default function Authenticated({ user, header, children }) {
                                 <NavLink href={route('pengadaan.index')} active={route().current('pengadaan.*')}>
                                     Pengadaan
                                 </NavLink>
+                                <NavLink href={route('room.index')} active={route().current('room.*')}>
+                                    Ruangan
+                                </NavLink>
                             </div>
                         </div>
 
@@ -116,6 +119,9 @@ export default function Authenticated({ user, header, children }) {
                             </ResponsiveNavLink>
                             <ResponsiveNavLink href={route('pengadaan.index')}>
                                 Pengadaan
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink href={route('room.index')}>
+                                Ruangan
                             </ResponsiveNavLink>
                             <ResponsiveNavLink method="post" href={route('logout')} as="button">
                                 Log Out

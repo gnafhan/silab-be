@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\InventoryController;
 use App\Http\Controllers\Admin\PengadaanController;
+use App\Http\Controllers\Admin\RoomController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Middleware\HandleInertiaRequests;
 use Illuminate\Foundation\Application;
@@ -42,6 +43,7 @@ Route::middleware(['auth', HandleInertiaRequests::class])->group(function () {
     
     // Inventory Routes
     Route::resource('inventory', \App\Http\Controllers\Admin\InventoryController::class);
+    Route::resource('room', RoomController::class);
 
     // Inventory Import Routes
 
