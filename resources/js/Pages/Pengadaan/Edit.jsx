@@ -7,7 +7,7 @@ export default function Edit({ auth, pengadaan, laboratories }) {
         spesifikasi: pengadaan.spesifikasi,
         jumlah: pengadaan.jumlah,
         harga_item: pengadaan.harga_item,
-        bulan_pengadaan: pengadaan.bulan_pengadaan,
+        bulan_pengadaan: pengadaan.bulan_pengadaan ? pengadaan.bulan_pengadaan.split('T')[0] : '',
         labolatory_id: pengadaan.labolatory_id,
     });
 
