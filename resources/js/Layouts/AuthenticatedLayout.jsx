@@ -11,7 +11,7 @@ export default function Authenticated({ user, header, children }) {
     return (
         <div className="min-h-screen bg-gray-100">
             <nav className="bg-white border-b border-gray-100">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16">
                         <div className="flex">
                             <div className="shrink-0 flex items-center">
@@ -25,7 +25,7 @@ export default function Authenticated({ user, header, children }) {
                                     Dashboard
                                 </NavLink>
                                 <NavLink href={route('inventory.index')} active={route().current('inventory.*')}>
-                                    Inventory
+                                    Inventaris
                                 </NavLink>
                                 <NavLink href={route('pengadaan.index')} active={route().current('pengadaan.*')}>
                                     Pengadaan
@@ -112,7 +112,7 @@ export default function Authenticated({ user, header, children }) {
                         <div className="mt-3 space-y-1">
                             {/* <ResponsiveNavLink href={route('profile.edit')}>Profile</ResponsiveNavLink> */}
                             <ResponsiveNavLink href={route('inventory.index')}>
-                                Inventory
+                                Inventaris
                             </ResponsiveNavLink>
                             <ResponsiveNavLink href={route('pengadaan.index')}>
                                 Pengadaan
@@ -127,7 +127,7 @@ export default function Authenticated({ user, header, children }) {
 
             {header && (
                 <header className="bg-white shadow">
-                    <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">{header}</div>
+                    <div className="max-w-screen-2xl mx-auto py-6 px-4 sm:px-6 lg:px-8">{header}</div>
                 </header>
             )}
 

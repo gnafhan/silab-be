@@ -77,12 +77,12 @@ export default function Index({ auth, inventories, laboratories, filters }) {
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Inventory Management</h2>}
+            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Manajemen Inventaris</h2>}
         >
             <Head title="Inventory" />
 
             <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <div className="max-w-screen-2xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6">
                             {/* Add Import Controls */}
@@ -130,7 +130,7 @@ export default function Index({ auth, inventories, laboratories, filters }) {
                                         onChange={handleLabFilterChange}
                                         className="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                                     >
-                                        <option value="">All Laboratories</option>
+                                        <option value="">Semua Labolatorium</option>
                                         {laboratories.map((lab) => (
                                             <option key={lab.id} value={lab.id}>{lab.name}</option>
                                         ))}
@@ -141,10 +141,10 @@ export default function Index({ auth, inventories, laboratories, filters }) {
                                         onChange={handleLimitChange}
                                         className="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                                     >
-                                        <option value="10">10 per page</option>
-                                        <option value="25">25 per page</option>
-                                        <option value="50">50 per page</option>
-                                        <option value="100">100 per page</option>
+                                        <option value="10">10 per halaman</option>
+                                        <option value="25">25 per halaman</option>
+                                        <option value="50">50 per halaman</option>
+                                        <option value="100">100 per halaman</option>
                                     </select>
                                 </div>
 
@@ -161,24 +161,12 @@ export default function Index({ auth, inventories, laboratories, filters }) {
                                 <table className="min-w-full divide-y divide-gray-200">
                                     <thead className="bg-gray-50">
                                         <tr>
-                                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Item Name
-                                            </th>
-                                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                No. Item
-                                            </th>
-                                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Condition
-                                            </th>
-                                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Room
-                                            </th>
-                                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Laboratory
-                                            </th>
-                                            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                Actions
-                                            </th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama Barang</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No Barang</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kondisi</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ruangan</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Laboratorium</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody className="bg-white divide-y divide-gray-200">
@@ -195,14 +183,14 @@ export default function Index({ auth, inventories, laboratories, filters }) {
                                                         className="inline-flex items-center px-3 py-2 bg-indigo-500 hover:bg-indigo-700 text-white rounded-md space-x-2"
                                                     >
                                                         <Edit className="w-4 h-4" />
-                                                        <span>Edit</span>
+                                                        <span>Ubah</span>
                                                     </Link>
                                                     <button
                                                         onClick={() => handleDelete(inventory.id)}
                                                         className="inline-flex items-center px-3 py-2 bg-red-500 hover:bg-red-700 text-white rounded-md space-x-2"
                                                     >
                                                         <Trash2 className="w-4 h-4" />
-                                                        <span>Delete</span>
+                                                        <span>Hapus</span>
                                                     </button>
                                                 </td>
                                             </tr>
@@ -216,7 +204,7 @@ export default function Index({ auth, inventories, laboratories, filters }) {
                                 <div className="mt-6">
                                     <div className="flex items-center justify-between">
                                         <div className="text-sm text-gray-700">
-                                            Showing {inventories.from} to {inventories.to} of {inventories.total} results
+                                            Menampilkan {inventories.from} sampai {inventories.to} dari {inventories.total} hasil
                                         </div>
                                         <div className="flex items-center space-x-2">
                                             <button
@@ -229,7 +217,7 @@ export default function Index({ auth, inventories, laboratories, filters }) {
                                                 disabled={!inventories.prev_page_url}
                                             >
                                                 <ChevronLeft className="w-4 h-4 mr-1" />
-                                                <span>Previous</span>
+                                                <span>Sebelumnya</span>
                                             </button>
 
                                             {/* Numbered Pages */}
@@ -259,7 +247,7 @@ export default function Index({ auth, inventories, laboratories, filters }) {
                                                 }`}
                                                 disabled={!inventories.next_page_url}
                                             >
-                                                <span>Next</span>
+                                                <span>Berikutnya</span>
                                                 <ChevronRight className="w-4 h-4 ml-1" />
                                             </button>
                                         </div>

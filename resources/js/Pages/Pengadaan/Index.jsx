@@ -102,12 +102,12 @@ export default function Index({ auth, pengadaans, laboratories, filters }) {
     return (
         <AuthenticatedLayout
             user={auth.user}
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Pengadaan Management</h2>}
+            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Manajemen Pengadaan</h2>}
         >
             <Head title="Pengadaan" />
 
             <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <div className="max-w-screen-2xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6">
                             {/* Add Import Controls before existing search controls */}
@@ -145,7 +145,7 @@ export default function Index({ auth, pengadaans, laboratories, filters }) {
                                     <form onSubmit={handleSearch} className="flex space-x-2">
                                         <input
                                             type="text"
-                                            placeholder="Search items..."
+                                            placeholder="Cari barang..."
                                             className="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                                             value={search}
                                             onChange={(e) => setSearch(e.target.value)}
@@ -163,7 +163,7 @@ export default function Index({ auth, pengadaans, laboratories, filters }) {
                                         onChange={handleLabFilterChange}
                                         className="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                                     >
-                                        <option value="">All Laboratories</option>
+                                        <option value="">Semua Laboratorium</option>
                                         {laboratories.map((lab) => (
                                             <option key={lab.id} value={lab.id}>{lab.name}</option>
                                         ))}
@@ -174,19 +174,19 @@ export default function Index({ auth, pengadaans, laboratories, filters }) {
                                         onChange={handleMonthFilterChange}
                                         className="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                                     >
-                                        <option value="">All Months</option>
-                                        <option value="1">January</option>
-                                        <option value="2">February</option>
-                                        <option value="3">March</option>
+                                        <option value="">Semua Bulan</option>
+                                        <option value="1">Januari</option>
+                                        <option value="2">Februari</option>
+                                        <option value="3">Maret</option>
                                         <option value="4">April</option>
-                                        <option value="5">May</option>
-                                        <option value="6">June</option>
-                                        <option value="7">July</option>
-                                        <option value="8">August</option>
+                                        <option value="5">Mei</option>
+                                        <option value="6">Juni</option>
+                                        <option value="7">Juli</option>
+                                        <option value="8">Agustus</option>
                                         <option value="9">September</option>
-                                        <option value="10">October</option>
+                                        <option value="10">Oktober</option>
                                         <option value="11">November</option>
-                                        <option value="12">December</option>
+                                        <option value="12">Desember</option>
                                     </select>
 
                                     <select
@@ -194,7 +194,7 @@ export default function Index({ auth, pengadaans, laboratories, filters }) {
                                         onChange={handleYearFilterChange}
                                         className="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                                     >
-                                        <option value="">All Years</option>
+                                        <option value="">Semua Tahun</option>
                                         {Array.from({ length: 10 }, (_, i) => new Date().getFullYear() - i).map(year => (
                                             <option key={year} value={year}>{year}</option>
                                         ))}
@@ -205,10 +205,10 @@ export default function Index({ auth, pengadaans, laboratories, filters }) {
                                         onChange={handleLimitChange}
                                         className="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                                     >
-                                        <option value="10">10 per page</option>
-                                        <option value="25">25 per page</option>
-                                        <option value="50">50 per page</option>
-                                        <option value="100">100 per page</option>
+                                        <option value="10">10 per halaman</option>
+                                        <option value="25">25 per halaman</option>
+                                        <option value="50">50 per halaman</option>
+                                        <option value="100">100 per halaman</option>
                                     </select>
                                 </div>
 
@@ -225,13 +225,13 @@ export default function Index({ auth, pengadaans, laboratories, filters }) {
                                 <table className="min-w-full divide-y divide-gray-200">
                                     <thead className="bg-gray-50">
                                         <tr>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Item Name</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama Barang</th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Spesifikasi</th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Jumlah</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Harga Item</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Harga Barang</th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Bulan</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Laboratory</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Laboratorium</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody className="bg-white divide-y divide-gray-200">
@@ -251,21 +251,21 @@ export default function Index({ auth, pengadaans, laboratories, filters }) {
                                                         className="inline-flex items-center px-3 py-2 bg-blue-500 hover:bg-blue-700 text-white rounded-md space-x-2"
                                                     >
                                                         <Eye className="w-4 h-4" />
-                                                        <span>View</span>
+                                                        <span>Lihat</span>
                                                     </Link>
                                                     <Link
                                                         href={route('pengadaan.edit', pengadaan.id)}
                                                         className="inline-flex items-center px-3 py-2 bg-indigo-500 hover:bg-indigo-700 text-white rounded-md space-x-2"
                                                     >
                                                         <Edit className="w-4 h-4" />
-                                                        <span>Edit</span>
+                                                        <span>Ubah</span>
                                                     </Link>
                                                     <button
                                                         onClick={() => handleDelete(pengadaan.id)}
                                                         className="inline-flex items-center px-3 py-2 bg-red-500 hover:bg-red-700 text-white rounded-md space-x-2"
                                                     >
                                                         <Trash2 className="w-4 h-4" />
-                                                        <span>Delete</span>
+                                                        <span>Hapus</span>
                                                     </button>
                                                 </td>
                                             </tr>
@@ -279,7 +279,7 @@ export default function Index({ auth, pengadaans, laboratories, filters }) {
                                 <div className="mt-6">
                                     <div className="flex items-center justify-between">
                                         <div className="text-sm text-gray-700">
-                                            Showing {pengadaans.from} to {pengadaans.to} of {pengadaans.total} results
+                                            Menampilkan {pengadaans.from} sampai {pengadaans.to} dari {pengadaans.total} hasil
                                         </div>
                                         <div className="flex items-center space-x-2">
                                             <button
