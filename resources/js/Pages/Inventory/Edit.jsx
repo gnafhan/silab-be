@@ -30,7 +30,7 @@ export default function Edit({ auth, inventory, rooms, laboratories }) {
             <Head title="Edit Inventaris" />
 
             <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <div className="max-w-screen-2xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <form onSubmit={handleSubmit} className="p-6">
                             {/* Same form fields as Create.jsx */}

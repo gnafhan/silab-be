@@ -25,21 +25,21 @@ export default function Show({ auth, pengadaan }) {
             <Head title="Detail Pengadaan" />
 
             <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <div className="max-w-screen-2xl mx-auto sm:px-6 lg:px-8">
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6">
                             <div className="mb-6">
                                 <h3 className="text-lg font-semibold mb-4">Informasi Pengadaan</h3>
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <p><strong>Item Name:</strong> {pengadaan.item_name}</p>
+                                        <p><strong>Nama Barang:</strong> {pengadaan.item_name}</p>
                                         <p><strong>Spesifikasi:</strong> {pengadaan.spesifikasi}</p>
                                         <p><strong>Jumlah:</strong> {pengadaan.jumlah}</p>
                                     </div>
                                     <div>
-                                        <p><strong>Harga Item:</strong> {pengadaan.harga_item}</p>
+                                        <p><strong>Harga Barang:</strong> {pengadaan.harga_item}</p>
                                         <p><strong>Bulan:</strong> {getMonthName(pengadaan.bulan_pengadaan)} {new Date(pengadaan.bulan_pengadaan).getFullYear()}</p>
-                                        <p><strong>Laboratory:</strong> {pengadaan.laboratory?.name}</p>
+                                        <p><strong>Laboratorium:</strong> {pengadaan.laboratory?.name}</p>
                                     </div>
                                 </div>
                             </div>
@@ -58,11 +58,11 @@ export default function Show({ auth, pengadaan }) {
                                 <table className="min-w-full divide-y divide-gray-200">
                                     <thead className="bg-gray-50">
                                         <tr>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Item Name</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No Item</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Condition</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Information</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama Barang</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No Barang</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kondisi</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Keterangan</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody className="bg-white divide-y divide-gray-200">
@@ -78,7 +78,7 @@ export default function Show({ auth, pengadaan }) {
                                                         className="inline-flex items-center px-3 py-2 bg-red-500 hover:bg-red-700 text-white rounded-md space-x-2"
                                                     >
                                                         <Trash2 className="w-4 h-4" />
-                                                        <span>Remove</span>
+                                                        <span>Hapus</span>
                                                     </button>
                                                 </td>
                                             </tr>
