@@ -3,6 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import debounce from 'lodash/debounce';
 import { Edit, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useForceHttps } from '@/hooks/useForceHttps';
 
 export default function Index({ auth, inventories, laboratories, filters }) {
     const [search, setSearch] = useState(filters.search || '');
@@ -17,7 +18,7 @@ export default function Index({ auth, inventories, laboratories, filters }) {
     const debouncedSearch = debounce((query) => {
         router.get(
             route('inventory.index'),
-            { search: query, limit, laboratory: labFilter },
+            { search: query, limit, laboratory: labFilter, page: inventories.current_page },
             { preserveState: true }
         );
     }, 300);
@@ -73,6 +74,8 @@ export default function Index({ auth, inventories, laboratories, filters }) {
             },
         });
     };
+
+    console.log(auth)
 
     return (
         <AuthenticatedLayout
@@ -178,20 +181,25 @@ export default function Index({ auth, inventories, laboratories, filters }) {
                                                 <td className="px-6 py-4 whitespace-nowrap">{inventory.room?.name}</td>
                                                 <td className="px-6 py-4 whitespace-nowrap">{inventory.laboratory?.name}</td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                                                    <Link
-                                                        href={route('inventory.edit', inventory.id)}
-                                                        className="inline-flex items-center px-3 py-2 bg-indigo-500 hover:bg-indigo-700 text-white rounded-md space-x-2"
-                                                    >
-                                                        <Edit className="w-4 h-4" />
-                                                        <span>Ubah</span>
-                                                    </Link>
-                                                    <button
-                                                        onClick={() => handleDelete(inventory.id)}
-                                                        className="inline-flex items-center px-3 py-2 bg-red-500 hover:bg-red-700 text-white rounded-md space-x-2"
-                                                    >
-                                                        <Trash2 className="w-4 h-4" />
-                                                        <span>Hapus</span>
-                                                    </button>
+                                                    {console.log(auth.user.lab_id === inventory.laboratory_id)}
+                                                    {(auth.user.role === 'laboran' && auth.user.lab_id === inventory.labolatory_id) || auth.user.role === 'admin' ? (
+                                                        <>
+                                                            <Link
+                                                                href={route('inventory.edit', inventory.id)}
+                                                                className="inline-flex items-center px-3 py-2 bg-indigo-500 hover:bg-indigo-700 text-white rounded-md space-x-2"
+                                                            >
+                                                                <Edit className="w-4 h-4" />
+                                                                <span>Ubah</span>
+                                                            </Link>
+                                                            <button
+                                                                onClick={() => handleDelete(inventory.id)}
+                                                                className="inline-flex items-center px-3 py-2 bg-red-500 hover:bg-red-700 text-white rounded-md space-x-2"
+                                                            >
+                                                                <Trash2 className="w-4 h-4" />
+                                                                <span>Hapus</span>
+                                                            </button>
+                                                        </>
+                                                    ) : null}
                                                 </td>
                                             </tr>
                                         ))}
@@ -208,7 +216,11 @@ export default function Index({ auth, inventories, laboratories, filters }) {
                                         </div>
                                         <div className="flex items-center space-x-2">
                                             <button
-                                                onClick={() => inventories.prev_page_url && router.get(inventories.prev_page_url)}
+                                                onClick={() => {
+                                                    if (inventories.prev_page_url) {
+                                                        router.get(useForceHttps(inventories.prev_page_url));
+                                                    }
+                                                }}
                                                 className={`inline-flex items-center px-3 py-2 rounded-md ${
                                                     !inventories.prev_page_url
                                                         ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
@@ -225,7 +237,11 @@ export default function Index({ auth, inventories, laboratories, filters }) {
                                                 {inventories.links.slice(1, -1).map((link, i) => (
                                                     <button
                                                         key={i}
-                                                        onClick={() => link.url && router.get(link.url)}
+                                                        onClick={() => {
+                                                            if (link.url) {
+                                                                router.get(useForceHttps(link.url));
+                                                            }
+                                                        }}
                                                         className={`px-3 py-2 rounded-md ${
                                                             link.active
                                                                 ? 'bg-blue-500 text-white'
@@ -239,7 +255,11 @@ export default function Index({ auth, inventories, laboratories, filters }) {
                                             </div>
 
                                             <button
-                                                onClick={() => inventories.next_page_url && router.get(inventories.next_page_url)}
+                                                onClick={() => {
+                                                    if (inventories.next_page_url) {
+                                                        router.get(useForceHttps(inventories.next_page_url));
+                                                    }
+                                                }}
                                                 className={`inline-flex items-center px-3 py-2 rounded-md ${
                                                     !inventories.next_page_url
                                                         ? 'bg-gray-100 text-gray-400 cursor-not-allowed'

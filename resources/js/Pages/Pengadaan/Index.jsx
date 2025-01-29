@@ -3,6 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, router } from '@inertiajs/react';
 import debounce from 'lodash/debounce';
 import { Eye, Edit, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useForceHttps } from '@/hooks/useForceHttps';
 
 export default function Index({ auth, pengadaans, laboratories, filters }) {
     const [search, setSearch] = useState(filters.search || '');
@@ -283,7 +284,7 @@ export default function Index({ auth, pengadaans, laboratories, filters }) {
                                         </div>
                                         <div className="flex items-center space-x-2">
                                             <button
-                                                onClick={() => pengadaans.prev_page_url && router.get(pengadaans.prev_page_url)}
+                                                onClick={() => pengadaans.prev_page_url && router.get(useForceHttps(pengadaans.prev_page_url))}
                                                 className={`inline-flex items-center px-3 py-2 rounded-md ${
                                                     !pengadaans.prev_page_url
                                                         ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
@@ -314,7 +315,7 @@ export default function Index({ auth, pengadaans, laboratories, filters }) {
                                             </div>
 
                                             <button
-                                                onClick={() => pengadaans.next_page_url && router.get(pengadaans.next_page_url)}
+                                                onClick={() => pengadaans.next_page_url && router.get(useForceHttps(pengadaans.next_page_url))}
                                                 className={`inline-flex items-center px-3 py-2 rounded-md ${
                                                     !pengadaans.next_page_url
                                                         ? 'bg-gray-100 text-gray-400 cursor-not-allowed'

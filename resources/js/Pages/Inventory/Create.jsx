@@ -1,5 +1,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, useForm } from '@inertiajs/react';
+import { useEffect } from 'react';
+import Select from 'react-select';
 
 export default function Create({ auth, rooms, laboratories }) {
     const { data, setData, post, processing, errors } = useForm({
@@ -13,10 +15,22 @@ export default function Create({ auth, rooms, laboratories }) {
         labolatory_id: ''
     });
 
+    useEffect(() => {
+        // If user is laboran, set and disable laboratory selection
+        if (auth.user.role === 'laboran') {
+            setData('labolatory_id', auth.user.lab_id);
+        }
+    }, []);
+
     const handleSubmit = (e) => {
         e.preventDefault();
         post(route('inventory.store'));
     };
+
+    const roomOptions = rooms.map(room => ({
+        value: room.id,
+        label: room.name
+    }));
 
     return (
         <AuthenticatedLayout
@@ -93,16 +107,17 @@ export default function Create({ auth, rooms, laboratories }) {
 
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700">Ruangan</label>
-                                    <select
-                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
-                                        value={data.room_id}
-                                        onChange={e => setData('room_id', e.target.value)}
-                                    >
-                                        <option value="">Pilih Ruangan</option>
-                                        {rooms.map(room => (
-                                            <option key={room.id} value={room.id}>{room.name}</option>
-                                        ))}
-                                    </select>
+                                    <Select
+                                        className="mt-1"
+                                        options={roomOptions}
+                                        value={roomOptions.find(option => option.value === data.room_id)}
+                                        onChange={(option) => setData('room_id', option ? option.value : '')}
+                                        isClearable
+                                        placeholder="Cari ruangan..."
+                                        classNames={{
+                                            control: (state) => 'border-gray-300 rounded-md shadow-sm focus:border-teal-500 focus:ring-teal-500'
+                                        }}
+                                    />
                                     {errors.room_id && <div className="text-red-500 text-sm mt-1">{errors.room_id}</div>}
                                 </div>
 
@@ -112,6 +127,7 @@ export default function Create({ auth, rooms, laboratories }) {
                                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
                                         value={data.labolatory_id}
                                         onChange={e => setData('labolatory_id', e.target.value)}
+                                        disabled={auth.user.role === 'laboran'}
                                     >
                                         <option value="">Pilih Labolatorium</option>
                                         {laboratories.map(lab => (

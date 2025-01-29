@@ -11,12 +11,18 @@ use Inertia\Inertia;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\InventoryImport;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class InventoryController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Inventory::with(['room', 'laboratory', 'creator']);
+        $user = Auth::user();
+        if ($user->role === 'laboran') {
+            $query = Inventory::with(['room', 'laboratory', 'creator']);
+        } else {
+            $query = Inventory::with(['room', 'laboratory', 'creator']);
+        }
 
         // Search functionality
         if ($request->has('search')) {
@@ -43,12 +49,21 @@ class InventoryController extends Controller
         return Inertia::render('Inventory/Index', [
             'inventories' => $inventories,
             'laboratories' => Labolatory::all(),
-            'filters' => $request->only(['search', 'limit', 'laboratory'])
+            'filters' => $request->only(['search', 'limit', 'laboratory']),
+            'can' => [
+                'update_inventory' => true,
+                'delete_inventory' => true
+            ]
         ]);
     }
 
     public function create()
     {
+        $user = Auth::user();
+        if ($user->role !== 'admin' && $user->role !== 'laboran') {
+            abort(403, 'Unauthorized action.');
+        }
+
         $rooms = Room::all();
         $laboratories = Labolatory::all();
 
@@ -60,6 +75,11 @@ class InventoryController extends Controller
 
     public function store(Request $request)
     {
+        $user = Auth::user();
+        if ($user->role !== 'admin' && $user->role !== 'laboran') {
+            abort(403, 'Unauthorized action.');
+        }
+
         $validated = $request->validate([
             'item_name' => 'required|string|max:255',
             'no_item' => 'required|string|max:255',
@@ -68,7 +88,15 @@ class InventoryController extends Controller
             'no_inv_ugm' => 'required|string',
             'information' => 'nullable|string',
             'room_id' => 'required|exists:rooms,id',
-            'labolatory_id' => 'required|exists:labolatories,id',
+            'labolatory_id' => [
+                'required',
+                'exists:labolatories,id',
+                function ($attribute, $value, $fail) use ($user) {
+                    if ($user->role === 'laboran' && $value != $user->lab_id) {
+                        $fail('You can only add inventory to your own laboratory.');
+                    }
+                },
+            ],
         ]);
 
         $validated['created_by'] = auth()->id();
@@ -82,53 +110,90 @@ class InventoryController extends Controller
 
     public function edit(Inventory $inventory)
     {
-        $rooms = Room::all();
-        $laboratories = Labolatory::all();
+        try {
+            $this->authorize('update', $inventory);
 
-        return Inertia::render('Inventory/Edit', [
-            'inventory' => $inventory,
-            'rooms' => $rooms,
-            'laboratories' => $laboratories
-        ]);
+            $rooms = Room::all();
+            $laboratories = Labolatory::all();
+
+            return Inertia::render('Inventory/Edit', [
+                'inventory' => $inventory,
+                'rooms' => $rooms,
+                'laboratories' => $laboratories
+            ]);
+        } catch (\Exception $e) {
+            abort(403, 'You are not authorized to edit this inventory.');
+        }
     }
 
     public function update(Request $request, Inventory $inventory)
     {
-        $validated = $request->validate([
-            'item_name' => 'required|string|max:255',
-            'no_item' => 'required|string|max:255',
-            'condition' => 'required|string',
-            'alat/bhp' => 'required|string',
-            'no_inv_ugm' => 'required|string',
-            'information' => 'nullable|string',
-            'room_id' => 'required|exists:rooms,id',
-            'labolatory_id' => 'required|exists:labolatories,id',
-        ]);
+        try {
+            $this->authorize('update', $inventory);
+            $user = Auth::user();
 
-        $validated['updated_by'] = auth()->id();
+            $validated = $request->validate([
+                'item_name' => 'required|string|max:255',
+                'no_item' => 'required|string|max:255',
+                'condition' => 'required|string',
+                'alat/bhp' => 'required|string',
+                'no_inv_ugm' => 'required|string',
+                'information' => 'nullable|string',
+                'room_id' => 'required|exists:rooms,id',
+                'labolatory_id' => [
+                    'required',
+                    'exists:labolatories,id',
+                    function ($attribute, $value, $fail) use ($user, $inventory) {
+                        if ($user->role === 'laboran') {
+                            if ($value != $user->lab_id) {
+                                $fail('You can only manage inventory in your own laboratory.');
+                            }
+                            if ($inventory->labolatory_id != $user->lab_id) {
+                                $fail('You can only edit inventory from your own laboratory.');
+                            }
+                        }
+                    },
+                ],
+            ]);
 
-        $inventory->update($validated);
+            $validated['updated_by'] = auth()->id();
 
-        Inertia::share([
-            'flash' => [
-                'message' => 'Inventory updated successfully'
-            ]
-        ]);
+            $inventory->update($validated);
 
-        return redirect()->route('inventory.index')
-            ->with('message', 'Inventory updated successfully');
+            Inertia::share([
+                'flash' => [
+                    'message' => 'Inventory updated successfully'
+                ]
+            ]);
+
+            return redirect()->route('inventory.index')
+                ->with('message', 'Inventory updated successfully');
+        } catch (\Exception $e) {
+            abort(403, 'You are not authorized to update this inventory.');
+        }
     }
 
     public function destroy(Inventory $inventory)
     {
-        $inventory->delete();
+        try {
+            $this->authorize('delete', $inventory);
+            
+            $inventory->delete();
 
-        return redirect()->route('inventory.index')
-            ->with('message', 'Inventory deleted successfully');
+            return redirect()->route('inventory.index')
+                ->with('message', 'Inventory deleted successfully');
+        } catch (\Exception $e) {
+            abort(403, 'You are not authorized to delete this inventory.');
+        }
     }
 
     public function import(Request $request)
     {
+        $user = Auth::user();
+        if ($user->role !== 'admin' && $user->role !== 'laboran') {
+            abort(403, 'Unauthorized action.');
+        }
+
         $request->validate([
             'file' => 'required|mimes:xlsx,xls',
         ]);
@@ -153,6 +218,11 @@ class InventoryController extends Controller
 
     public function downloadTemplate()
     {
+        $user = Auth::user();
+        if ($user->role !== 'admin' && $user->role !== 'laboran') {
+            abort(403, 'Unauthorized action.');
+        }
+
         $path = storage_path('app/templates');
         $filepath = $path . '/inventory_template.xlsx';
         
