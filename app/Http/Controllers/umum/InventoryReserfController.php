@@ -32,11 +32,28 @@ class InventoryReserfController extends Controller
     }
 
     public function getReserve(){
-        $reserves = InventoryReserf::get();
+        $reserves = InventoryReserf::with('inventory')->get();
  
         return response()->json([
             "message"=> "Berhasil mengambil data reservasi inventaris",
             "data"=>$reserves
+        ]);
+    }
+
+    public function reservebyId($id)
+    {
+        $reserves = InventoryReserf::with('inventory')->find($id);
+
+        if (!$reserves) {
+            return response()->json([
+                "message" => "Tidak ada jadwal reservasi saat ini",
+                "data" => []
+            ]);
+        }
+
+        return response()->json([
+            "message" => "Berhasil mengambil history reservasi",
+            "data" => $reserves
         ]);
     }
 

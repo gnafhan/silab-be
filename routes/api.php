@@ -13,6 +13,7 @@ use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\umum\InventoryReserfController;
 use App\Http\Controllers\umum\LaboratoriumController;
 use App\Http\Controllers\umum\LandingpageController;
+use App\Models\InventoryReserf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -37,6 +38,9 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::get('landingpage', [LandingpageController::class, 'index'])->name('landingpage');
 Route::get('check-auth', [AuthController::class, 'checkAuth'])->name('checkAuth');
 Route::post('update/profil', [AuthController::class, 'updateProfil'])->name('updateProfil');
+Route::get('inventory/reserve', [InventoryReserfController::class, 'getReserve'])->name('inventory.reserves');
+Route::get('inventory/reserve/{id}', [InventoryReserfController::class, 'reservebyId'])->name('inventoryReserves.detail');
+
 
 // Laboratorium
 Route::get('laboratorium', [LaboratoriumController::class, 'index'])->name('laboratorium');
@@ -84,7 +88,6 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     // Inventory route
     Route::get('inventory', [InventoryReserfController::class, 'index'])->name('inventory');
-    Route::get('inventory/reserve', [InventoryReserfController::class, 'getReserve'])->name('inventory.reserves');
     Route::post('inventory/reserve', [InventoryReserfController::class, 'inventoryReserve'])->name('inventory.reserve');
 });
     // Route::get('laboratorium/all-reserve', [LaboratoriumController::class, 'allReserve'])->name('laboratorium.allReserve');
