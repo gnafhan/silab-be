@@ -12,6 +12,9 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\InventoryImport;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use App\Models\InventoryGallery;
+use Illuminate\Auth\Access\Gate;
 
 class InventoryController extends Controller
 {
@@ -19,17 +22,21 @@ class InventoryController extends Controller
     {
         $user = Auth::user();
         if ($user->role === 'laboran') {
-            $query = Inventory::with(['room', 'laboratory', 'creator']);
+            $query = Inventory::with(['room', 'laboratory', 'creator', 'galleries' => function ($q) {
+                $q->latest()->take(1);
+            }]);
         } else {
-            $query = Inventory::with(['room', 'laboratory', 'creator']);
+            $query = Inventory::with(['room', 'laboratory', 'creator', 'galleries' => function ($q) {
+                $q->latest()->take(1);
+            }]);
         }
 
         // Search functionality
         if ($request->has('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('item_name', 'LIKE', "%{$search}%")
-                  ->orWhere('no_item', 'LIKE', "%{$search}%");
+                    ->orWhere('no_item', 'LIKE', "%{$search}%");
             });
         }
 
@@ -43,7 +50,7 @@ class InventoryController extends Controller
         $inventories = $query->latest()
             ->paginate($limit)
             ->appends($request->query());
-        
+
         // dd($inventories);
 
         return Inertia::render('Inventory/Index', [
@@ -102,7 +109,23 @@ class InventoryController extends Controller
         $validated['created_by'] = auth()->id();
         $validated['updated_by'] = auth()->id();
 
-        Inventory::create($validated);
+        $inventory = Inventory::create($validated);
+
+
+        // Handle gallery uploads
+        if ($request->hasFile('gallery')) {
+            // dd($request->gallery);
+            // dd($request->file('gallery')->store('inventory-galleries', 'public'));
+
+            foreach ($request->gallery as $image) {
+                // dd("aa", $image);
+                $path = $image->store('inventory-galleries', 'public');
+                $inventory->galleries()->create([
+                    'filepath' => $path,
+                    'filename' => $image->getClientOriginalName()
+                ]);
+            }
+        }
 
         return redirect()->route('inventory.index')
             ->with('message', 'Inventory created successfully');
@@ -115,9 +138,12 @@ class InventoryController extends Controller
 
             $rooms = Room::all();
             $laboratories = Labolatory::all();
+            $inventoriy_with_galleries = Inventory::with('galleries')->find($inventory->id);
+            // dd($inventoriy_with_galleries);
+
 
             return Inertia::render('Inventory/Edit', [
-                'inventory' => $inventory,
+                'inventory' => $inventoriy_with_galleries,
                 'rooms' => $rooms,
                 'laboratories' => $laboratories
             ]);
@@ -154,22 +180,28 @@ class InventoryController extends Controller
                         }
                     },
                 ],
+                'galleries.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
             ]);
 
             $validated['updated_by'] = auth()->id();
-
             $inventory->update($validated);
 
-            Inertia::share([
-                'flash' => [
-                    'message' => 'Inventory updated successfully'
-                ]
-            ]);
+            // Handle gallery uploads
+            if ($request->hasFile('galleries')) {
+                foreach ($request->galleries as $image) {
+                    $path = $image->store('inventory-galleries', 'public');
+                    $inventory->galleries()->create([
+                        'filepath' => $path,
+                        'filename' => $image->getClientOriginalName()
+                    ]);
+                }
+            }
 
             return redirect()->route('inventory.index')
                 ->with('message', 'Inventory updated successfully');
         } catch (\Exception $e) {
-            abort(403, 'You are not authorized to update this inventory.');
+            Log::error('Update inventory error: ' . $e->getMessage());
+            abort(403, 'Error updating inventory: ' . $e->getMessage());
         }
     }
 
@@ -177,7 +209,7 @@ class InventoryController extends Controller
     {
         try {
             $this->authorize('delete', $inventory);
-            
+
             $inventory->delete();
 
             return redirect()->route('inventory.index')
@@ -225,18 +257,32 @@ class InventoryController extends Controller
 
         $path = storage_path('app/templates');
         $filepath = $path . '/inventory_template.xlsx';
-        
+
         if (!file_exists($path)) {
             // Create directory if it doesn't exist
             mkdir($path, 0777, true);
-            
+
             // Generate template if it doesn't exist
             \Illuminate\Support\Facades\Artisan::call('excel:generate-inventory');
         } elseif (!file_exists($filepath)) {
             // Generate template if only the file is missing
             \Illuminate\Support\Facades\Artisan::call('excel:generate-inventory');
         }
-        
+
         return response()->download($filepath);
+    }
+
+    public function deleteGallery($id)
+    {
+        $gallery = InventoryGallery::findOrFail($id);
+        $this->authorize('delete', $gallery->inventory);
+
+        // Delete file from storage
+        Storage::disk('public')->delete($gallery->filepath);
+
+        // Delete record
+        $gallery->delete();
+
+        return back()->with('message', 'Image deleted successfully');
     }
 }

@@ -12,7 +12,6 @@ export default function Index({ auth, inventories, laboratories, filters }) {
     const [importing, setImporting] = useState(false);
 
     const props = usePage().props;
-    console.log(props);
 
     // Debounced search function
     const debouncedSearch = debounce((query) => {
@@ -74,8 +73,6 @@ export default function Index({ auth, inventories, laboratories, filters }) {
             },
         });
     };
-
-    console.log(auth)
 
     return (
         <AuthenticatedLayout
@@ -175,13 +172,24 @@ export default function Index({ auth, inventories, laboratories, filters }) {
                                     <tbody className="bg-white divide-y divide-gray-200">
                                         {inventories.data.map((inventory) => (
                                             <tr key={inventory.id}>
-                                                <td className="px-6 py-4 whitespace-nowrap">{inventory.item_name}</td>
+                                                <td className="px-6 py-4">
+                                                    <div className="flex items-center space-x-4">
+                                                        <img 
+                                                            src={inventory.galleries?.[0]?.filepath 
+                                                                ? `/storage/${inventory.galleries[0].filepath}`
+                                                                : '/placeholder-image.jpg'} 
+                                                            alt={inventory.item_name}
+                                                            className="w-16 h-16 object-cover rounded"
+                                                        />
+                                                        <span>{inventory.item_name}</span>
+                                                    </div>
+                                                </td>
                                                 <td className="px-6 py-4 whitespace-nowrap">{inventory.no_item}</td>
                                                 <td className="px-6 py-4 whitespace-nowrap">{inventory.condition}</td>
                                                 <td className="px-6 py-4 whitespace-nowrap">{inventory.room?.name}</td>
                                                 <td className="px-6 py-4 whitespace-nowrap">{inventory.laboratory?.name}</td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                                                    {console.log(auth.user.lab_id === inventory.laboratory_id)}
+                                                    
                                                     {(auth.user.role === 'laboran' && auth.user.lab_id === inventory.labolatory_id) || auth.user.role === 'admin' ? (
                                                         <>
                                                             <Link

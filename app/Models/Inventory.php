@@ -81,4 +81,9 @@ class Inventory extends Model
     {
         return $this->hasMany(ItemPengadaan::class);
     }
+
+    public function galleries()
+    {
+        return $this->hasMany(InventoryGallery::class);
+    }
 }
