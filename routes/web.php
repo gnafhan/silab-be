@@ -42,6 +42,8 @@ Route::middleware(['auth', HandleInertiaRequests::class])->group(function () {
     Route::post('inventory/import', [InventoryController::class, 'import'])->name('inventory.import');
     
     // Inventory Routes
+
+    Route::delete('/inventory/gallery/{id}', [InventoryController::class, 'deleteGallery'])->name('inventory.gallery.delete');
     Route::resource('inventory', \App\Http\Controllers\Admin\InventoryController::class);
     Route::resource('room', RoomController::class);
 

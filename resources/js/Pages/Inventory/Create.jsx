@@ -12,7 +12,8 @@ export default function Create({ auth, rooms, laboratories }) {
         no_inv_ugm: '',
         information: '',
         room_id: '',
-        labolatory_id: ''
+        labolatory_id: '',
+        gallery: []
     });
 
     useEffect(() => {
@@ -22,9 +23,29 @@ export default function Create({ auth, rooms, laboratories }) {
         }
     }, []);
 
+    const handleImageUpload = (e) => {
+        setData('gallery', e.target.files);
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        post(route('inventory.store'));
+        const formData = new FormData();
+        
+        // Append existing form data
+        Object.keys(data).forEach(key => {
+            if (key !== 'gallery') {
+                formData.append(key, data[key]);
+            }
+        });
+        
+        // Append gallery files
+        if (data.gallery) {
+            Array.from(data.gallery).forEach(file => {
+                formData.append('gallery[]', file);
+            });
+        }
+
+        post(route('inventory.store'), formData);
     };
 
     const roomOptions = rooms.map(room => ({
@@ -146,6 +167,18 @@ export default function Create({ auth, rooms, laboratories }) {
                                         onChange={e => setData('information', e.target.value)}
                                     ></textarea>
                                     {errors.information && <div className="text-red-500 text-sm mt-1">{errors.information}</div>}
+                                </div>
+
+                                <div className="col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700">Gallery Images</label>
+                                    <input
+                                        type="file"
+                                        multiple
+                                        onChange={handleImageUpload}
+                                        accept="image/*"
+                                        className="mt-1 block w-full"
+                                    />
+                                    {errors.gallery && <div className="text-red-500 text-sm mt-1">{errors.gallery}</div>}
                                 </div>
                             </div>
 
