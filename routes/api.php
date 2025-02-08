@@ -27,14 +27,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function(){
-    return response()->json(["message"=> "Server Running"]);
+Route::get('/', function () {
+    return response()->json(["message" => "Server Running"]);
 });
 
 // Routes tanpa middleware
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::get('landingpage', [LandingpageController::class, 'index'])->name('landingpage');
+Route::get('inventory', [InventoryReserfController::class, 'index'])->name('inventory');
+
 Route::get('check-auth', [AuthController::class, 'checkAuth'])->name('checkAuth');
 Route::post('update/profil', [AuthController::class, 'updateProfil'])->name('updateProfil');
 
@@ -76,14 +78,13 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('dashboard/inventoryReserve', [DashboardController::class, 'getInventoryReserve'])->name('dashboard.inventoryReserve');// Profile route
     Route::get('users', [ProfileController::class, 'getProfile'])->name('users.profile');
     Route::patch('users', [ProfileController::class, 'update'])->name('users.update');
-    
+
     // Laboratorium route
     Route::get('laboratorium/schedule/{id}', [LaboratoriumController::class, 'getScheduleByRoom'])->name('laboratorium.schedule');
     Route::get('laboratorium/{id}/reserve', [LaboratoriumController::class, 'reserveByRoom'])->name('laboratorium.reserves');
     Route::post('laboratorium/reserve', [LaboratoriumController::class, 'labReserve'])->name('laboratorium.reserve');
 
     // Inventory route
-    Route::get('inventory', [InventoryReserfController::class, 'index'])->name('inventory');
     Route::get('inventory/reserve', [InventoryReserfController::class, 'getReserve'])->name('inventory.reserves');
     Route::post('inventory/reserve', [InventoryReserfController::class, 'inventoryReserve'])->name('inventory.reserve');
 });
