@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Models\InventoryGallery;
 use Illuminate\Auth\Access\Gate;
+use Illuminate\Routing\Route;
 
 class InventoryController extends Controller
 {
@@ -284,5 +285,41 @@ class InventoryController extends Controller
         $gallery->delete();
 
         return back()->with('message', 'Image deleted successfully');
+    }
+
+    public function welcome(Request $request)
+    {
+        $query = Inventory::with(['room', 'laboratory', 'galleries' => function ($q) {
+            $q->latest()->take(1);
+        }]);
+
+        // Search functionality
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('item_name', 'LIKE', "%{$search}%")
+                    ->orWhere('no_item', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // Laboratory filter
+        if ($request->has('laboratory') && $request->laboratory !== null) {
+            $query->where('labolatory_id', $request->laboratory);
+        }
+
+        // Pagination with dynamic limit
+        $limit = $request->input('limit', 10);
+        $inventories = $query->latest()
+            ->paginate($limit)
+            ->appends($request->query());
+
+        return Inertia::render('Welcome', [
+            'inventories' => $inventories,
+            'laboratories' => Labolatory::all(),
+            'filters' => $request->only(['search', 'limit', 'laboratory']),
+            // 'canLogin' => Route::has('login'),
+            // 'laravelVersion' => Application::VERSION,
+            // 'phpVersion' => PHP_VERSION,
+        ]);
     }
 }
