@@ -14,22 +14,16 @@ use Illuminate\Support\Facades\Mail;
 
 class InventoryReserfController extends Controller
 {
+
     public function index(){
-        $inventories = Inventory::select('item_name', 'condition', DB::raw('COUNT(*) as count'))
-        ->groupBy('item_name', 'condition')
-        ->get()
-        ->groupBy('item_name')
-        ->map(function ($group) {
-            return $group->mapWithKeys(function ($item) {
-                return [$item->condition => $item->count];
-            });
-        });       
+        $inventories = Inventory::get();
 
         return response()->json([
-            "message"=> "Berhasil mengambil data inventaris",
+            "message"=> "Berhasil mengambil data inventory",
             "data"=>$inventories
         ]);
     }
+    
 
     public function getReserve(){
         $reserves = InventoryReserf::get();
