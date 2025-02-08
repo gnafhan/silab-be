@@ -47,26 +47,43 @@ export default function Welcome({ auth, inventories, laboratories, filters, lara
         <>
             <Head title="Welcome" />
             <div className="min-h-screen bg-gray-100">
-                <div className="sm:fixed sm:top-0 sm:right-0 p-6 text-end">
-                    {auth.user ? (
-                        <Link
-                            href={route('dashboard')}
-                            className="font-semibold text-gray-600 hover:text-gray-900 focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500"
-                        >
-                            Dashboard
-                        </Link>
-                    ) : (
-                        <>
-                            <Link
-                                href={route('login')}
-                                className="font-semibold text-gray-600 hover:text-gray-900 focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500"
-                            >
-                                Log in
-                            </Link>
-                        </>
-                    )}
-                </div>
+                <nav className="bg-white border-b border-gray-100">
+                    <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="flex justify-between h-16">
+                            <div className="flex">
+                                <div className="flex items-center">
+                                    <div>
+                                        <h1 className="text-xl font-semibold text-gray-800">
+                                            Sistem Informasi Inventaris Laboratorium
+                                        </h1>
+                                        <p className="text-sm text-gray-600">
+                                            Departemen Teknik Elektro dan Informatika
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="flex items-center">
+                                {auth.user ? (
+                                    <Link
+                                        href={route('dashboard')}
+                                        className="text-gray-500 hover:text-gray-700 font-semibold"
+                                    >
+                                        Dashboard
+                                    </Link>
+                                ) : (
+                                    <Link
+                                        href={route('login')}
+                                        className="text-gray-500 hover:text-gray-700 font-semibold"
+                                    >
+                                        Log in
+                                    </Link>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </nav>
 
+                {/* Rest of the existing content */}
                 <div className="max-w-screen-2xl mx-auto sm:px-6 lg:px-8 py-12">
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                         <div className="p-6">
