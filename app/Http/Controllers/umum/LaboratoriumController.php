@@ -37,7 +37,7 @@ class LaboratoriumController extends Controller
 
     public function getScheduleByRoom($id){
         $jadwal = Room::with('schedules')->find($id);
- 
+
         if(!$jadwal){
             return response()->json(["message"=> "Jadwal tidak ditemukan"]);
         }
@@ -130,7 +130,7 @@ class LaboratoriumController extends Controller
         // return $validatedData;
 
         $room = Room::find($validatedData['room_id']);
-        if(!$room){ 
+        if(!$room){
             return response()->json(["message"=> "Room tidak ditemukan"]);
         }
 
@@ -185,3 +185,5 @@ class LaboratoriumController extends Controller
         ]);
     }
 }
+
+

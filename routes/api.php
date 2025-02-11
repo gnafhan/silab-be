@@ -1,21 +1,27 @@
 <?php
 
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\EmailVerificationController;
-use App\Http\Controllers\InventoryController;
-use App\Http\Controllers\JadwalController;
-use App\Http\Controllers\PeminjamanController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\ReserveRuleController;
-use App\Http\Controllers\RoomController;
-use App\Http\Controllers\SubjectController;
-use App\Http\Controllers\umum\InventoryReserfController;
-use App\Http\Controllers\umum\LaboratoriumController;
-use App\Http\Controllers\umum\LandingpageController;
-use App\Models\InventoryReserf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\RoomController;
+use App\Http\Controllers\JadwalController;
+use App\Http\Controllers\LaboranController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\StudentController;
+use App\Http\Controllers\SubjectController;
+use App\Http\Controllers\LecturerController;
+use App\Http\Controllers\ResearchController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\FileUploadController;
+use App\Http\Controllers\PeminjamanController;
+use App\Http\Controllers\ReserveRuleController;
+use App\Http\Controllers\umum\LandingpageController;
+use App\Http\Controllers\EmailVerificationController;
+use App\Http\Controllers\umum\LaboratoriumController;
+use App\Http\Controllers\LaboratoriumSupportController;
+use App\Http\Controllers\umum\InventoryReserfController;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,6 +64,22 @@ Route::get('laboratorium/{id}', [LaboratoriumController::class, 'detail'])->name
 // Rules
 Route::apiResource('rules', ReserveRuleController::class);
 
+//support
+Route::apiResource('laboratorium-support', LaboratoriumSupportController::class);
+
+//student
+Route::apiResource('studentCount', StudentController::class);
+
+//Dosen
+Route::apiResource('lecturerCount', LecturerController::class);
+
+//research
+Route::apiResource('researchCount', ResearchController::class);
+
+//laboran
+Route::apiResource('laboranCount', LaboranController::class);
+
+Route::post('/upload-foto', [FileUploadController::class, 'uploadFoto']);
 // Routes 'auth:sanctum' middleware
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -110,3 +132,6 @@ Route::middleware(['auth:sanctum', 'verified', 'admin'])->group(function () {
     Route::get('schedules', [JadwalController::class, 'getSchedule'])->name('schedule');
     Route::get('schedules/{id}', [JadwalController::class, 'getScheduleByRoom'])->name('schedule.detail');
 });
+
+
+

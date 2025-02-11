@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\umum;
 
 use App\Http\Controllers\Controller;
+use App\Mail\ApproveInventory;
 use App\Mail\InventoryReservationConfirmation;
 use App\Models\Inventory;
 use App\Models\InventoryReserf;
@@ -82,7 +83,7 @@ class InventoryReserfController extends Controller
 
     public function approve($id)
     {
-        $reserve = InventoryReserf::find($id);
+        $reserve = InventoryReserf::with('inventory')->find($id);
         
         if (!$reserve) {
             return response()->json([
@@ -92,6 +93,17 @@ class InventoryReserfController extends Controller
 
         $reserve->is_approved = 1;
         $reserve->save();
+
+        // Send email notifications
+        $recipients = [env('LABORAN_1_EMAIL'), env('LABORAN_2_EMAIL')];
+        foreach ($recipients as $email) {
+            try {
+                $result = Mail::to($email)->send(new ApproveInventory($reserve->inventory, $reserve));
+                // Log::info($result);
+            } catch (\Exception $e) {
+                Log::error($e->getMessage());
+            }
+        }
 
         return response()->json([
             "message" => "Berhasil menyetujui reservasi",
