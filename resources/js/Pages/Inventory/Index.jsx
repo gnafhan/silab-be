@@ -187,7 +187,7 @@ export default function Index({ auth, inventories, laboratories, filters }) {
                                                 <td className="px-6 py-4 whitespace-nowrap">{inventory.no_item}</td>
                                                 <td className="px-6 py-4 whitespace-nowrap">{inventory.condition}</td>
                                                 <td className="px-6 py-4 whitespace-nowrap">{inventory.room?.name}</td>
-                                                <td className="px-6 py-4 whitespace-nowrap">{inventory.laboratory?.name + " " + inventory.laboratory?.id}</td>
+                                                <td className="px-6 py-4 whitespace-nowrap">{inventory.laboratory?.name + " (" + inventory.laboratory?.id + ")"} </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                                                     
                                                     {(auth.user.role === 'laboran' && auth.user.lab_id === inventory.labolatory_id) || auth.user.role === 'admin' ? (
