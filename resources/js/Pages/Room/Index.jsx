@@ -75,16 +75,18 @@ export default function Index({ auth, rooms, filters }) {
                                 <table className="min-w-full divide-y divide-gray-200">
                                     <thead className="bg-gray-50">
                                         <tr>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Capacity</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Description</th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID Ruangan</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama Ruangan</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kapasitas</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tipe</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Deskripsi</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody className="bg-white divide-y divide-gray-200">
                                         {rooms.data.map((room) => (
                                             <tr key={room.id}>
+                                                <td className="px-6 py-4">{room.id}</td>
                                                 <td className="px-6 py-4">{room.name}</td>
                                                 <td className="px-6 py-4">{room.capacity}</td>
                                                 <td className="px-6 py-4 capitalize">{room.type}</td>
