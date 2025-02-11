@@ -9,6 +9,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class Inventory
@@ -28,6 +29,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Inventory extends Model
 {
+    use SoftDeletes;
 	protected $table = 'inventories';
 
 	protected $fillable = [
@@ -78,5 +80,10 @@ class Inventory extends Model
     public function itemPengadaans()
     {
         return $this->hasMany(ItemPengadaan::class);
+    }
+
+    public function galleries()
+    {
+        return $this->hasMany(InventoryGallery::class);
     }
 }

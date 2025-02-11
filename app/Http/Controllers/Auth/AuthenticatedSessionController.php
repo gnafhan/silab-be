@@ -8,6 +8,7 @@ use App\Providers\RouteServiceProvider;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -35,7 +36,8 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         // check role if not admin redirect to login
-        if (Auth::user()->role !== 'admin') {
+        Log::info(Auth::user()->role);
+        if (Auth::user()->role !== 'admin' && Auth::user()->role !== 'laboran') {
             Auth::logout();
             return redirect()->route('login');
         }

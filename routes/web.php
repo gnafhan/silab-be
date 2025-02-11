@@ -20,14 +20,7 @@ use Inertia\Inertia;
 |
 */
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        // 'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
+Route::get('/', [InventoryController::class, 'welcome'])->name('welcome');
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
@@ -42,6 +35,8 @@ Route::middleware(['auth', HandleInertiaRequests::class])->group(function () {
     Route::post('inventory/import', [InventoryController::class, 'import'])->name('inventory.import');
     
     // Inventory Routes
+
+    Route::delete('/inventory/gallery/{id}', [InventoryController::class, 'deleteGallery'])->name('inventory.gallery.delete');
     Route::resource('inventory', \App\Http\Controllers\Admin\InventoryController::class);
     Route::resource('room', RoomController::class);
 

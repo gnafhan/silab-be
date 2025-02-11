@@ -36,7 +36,7 @@ class InventoryReserf extends Model
 		'inventory_id' => 'int',
 		'start_time' => 'datetime',
 		'end_time' => 'datetime',
-		'is_approved' => 'bool'
+		// 'is_approved' => 'bool'
 	];
 
 	protected $fillable = [
@@ -47,7 +47,8 @@ class InventoryReserf extends Model
 		'email',
 		'is_approved',
 		'no_wa',
-		'needs'
+		'needs',
+		'name'
 	];
 
 	public function inventory()
