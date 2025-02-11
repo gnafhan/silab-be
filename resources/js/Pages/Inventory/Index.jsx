@@ -132,7 +132,7 @@ export default function Index({ auth, inventories, laboratories, filters }) {
                                     >
                                         <option value="">Semua Labolatorium</option>
                                         {laboratories.map((lab) => (
-                                            <option key={lab.id} value={lab.id}>{lab.name}</option>
+                                            <option key={lab.id} value={lab.id}>{lab.name} id: ({lab.id})</option>
                                         ))}
                                     </select>
 
