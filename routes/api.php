@@ -13,6 +13,7 @@ use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\umum\InventoryReserfController;
 use App\Http\Controllers\umum\LaboratoriumController;
 use App\Http\Controllers\umum\LandingpageController;
+use App\Models\InventoryReserf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -27,21 +28,30 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function(){
-    return response()->json(["message"=> "Server Running"]);
+Route::get('/', function () {
+    return response()->json(["message" => "Server Running"]);
 });
 
 // Routes tanpa middleware
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::get('landingpage', [LandingpageController::class, 'index'])->name('landingpage');
+Route::get('inventory', [InventoryReserfController::class, 'index'])->name('inventory');
+
 Route::get('check-auth', [AuthController::class, 'checkAuth'])->name('checkAuth');
 Route::post('update/profil', [AuthController::class, 'updateProfil'])->name('updateProfil');
+Route::put('inventory/reserve/{id}/approve', [InventoryReserfController::class, 'approve'])->name('inventory.reserve.approve');
+Route::put('inventory/reserve/{id}/reject', [InventoryReserfController::class, 'reject'])->name('inventory.reserve.reject');
+Route::get('inventory/reserve', [InventoryReserfController::class, 'getReserve'])->name('inventory.reserves');
+Route::get('inventory/reserve/{id}', [InventoryReserfController::class, 'reservebyId'])->name('inventoryReserves.detail');
+
 
 // Laboratorium
 Route::get('laboratorium', [LaboratoriumController::class, 'index'])->name('laboratorium');
 Route::get('laboratorium/all-reserve', [LaboratoriumController::class, 'allReserve'])->name('laboratorium.allReserve');
 Route::get('laboratorium/reserve/search/{query?}', [LaboratoriumController::class, 'searchReservations']);
+Route::put('laboratorium/reserve/{id}/approve', [LaboratoriumController::class, 'approve'])->name('laboratorium.reserve.approve');
+Route::put('laboratorium/reserve/{id}/reject', [LaboratoriumController::class, 'reject'])->name('laboratorium.reserve.reject');
 Route::get('laboratorium/reserve/{id}', [LaboratoriumController::class, 'reservebyId'])->name('laboratorium.reservebyId');
 Route::get('laboratorium/{id}', [LaboratoriumController::class, 'detail'])->name('laboratorium.detail');
 
@@ -76,16 +86,16 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('dashboard/inventoryReserve', [DashboardController::class, 'getInventoryReserve'])->name('dashboard.inventoryReserve');// Profile route
     Route::get('users', [ProfileController::class, 'getProfile'])->name('users.profile');
     Route::patch('users', [ProfileController::class, 'update'])->name('users.update');
-    
+
     // Laboratorium route
     Route::get('laboratorium/schedule/{id}', [LaboratoriumController::class, 'getScheduleByRoom'])->name('laboratorium.schedule');
     Route::get('laboratorium/{id}/reserve', [LaboratoriumController::class, 'reserveByRoom'])->name('laboratorium.reserves');
     Route::post('laboratorium/reserve', [LaboratoriumController::class, 'labReserve'])->name('laboratorium.reserve');
 
     // Inventory route
-    Route::get('inventory', [InventoryReserfController::class, 'index'])->name('inventory');
-    Route::get('inventory/reserve', [InventoryReserfController::class, 'getReserve'])->name('inventory.reserves');
+    // Route::get('inventory/reserve', [InventoryReserfController::class, 'getReserve'])->name('inventory.reserves');
     Route::post('inventory/reserve', [InventoryReserfController::class, 'inventoryReserve'])->name('inventory.reserve');
+    
 });
     // Route::get('laboratorium/all-reserve', [LaboratoriumController::class, 'allReserve'])->name('laboratorium.allReserve');
 

@@ -125,6 +125,7 @@ class LaboratoriumController extends Controller
             'email' => 'required|string|email|max:255',
             'no_wa' => 'required|string|max:50',
             'needs' => 'required|string',
+            'name' => 'required|string'
         ]);
         // return $validatedData;
 
@@ -141,6 +142,46 @@ class LaboratoriumController extends Controller
         return response()->json([
             "message"=> "Berhasil membuat reservasi laboratorium",
             "data"=>$labReserve
+        ]);
+    }
+
+    public function approve($id)
+    {
+        $reserve = RoomReserf::find($id);
+        
+        if (!$reserve) {
+            return response()->json([
+                "message" => "Reservasi tidak ditemukan"
+            ], 404);
+        }
+
+        $reserve->update([
+            'is_approved' => 1
+        ]);
+
+        return response()->json([
+            "message" => "Reservasi berhasil disetujui",
+            "data" => $reserve
+        ]);
+    }
+
+    public function reject($id)
+    {
+        $reserve = RoomReserf::find($id);
+        
+        if (!$reserve) {
+            return response()->json([
+                "message" => "Reservasi tidak ditemukan"
+            ], 404);
+        }
+
+        $reserve->update([
+            'is_approved' => -1
+        ]);
+
+        return response()->json([
+            "message" => "Reservasi berhasil ditolak",
+            "data" => $reserve
         ]);
     }
 }
