@@ -63,7 +63,16 @@ class LaboratoriumController extends Controller
             'start_time' => 'required|date',
             'end_time' => 'required|date',
             'identity' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255',
+            'email' => [
+                'required',
+                'email',
+                'unique:users,email',
+                function ($attribute, $value, $fail) {
+                    if (!str_ends_with($value, '@mail.ugm.ac.id')) {
+                        $fail('Email harus menggunakan domain @mail.ugm.ac.id.');
+                    }
+                },
+            ],
             'no_wa' => 'required|string|max:50',
             'needs' => 'required|string',
         ]);
