@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class Room
- * 
+ *
  * @property int $id
  * @property string $laboratorium_name
  * @property int|null $capacity
@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $description
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * 
+ *
  * @property Collection|Inventory[] $inventories
  * @property Collection|RoomReserf[] $room_reserves
  * @property Collection|Schedule[] $schedules
@@ -39,6 +39,7 @@ class Room extends Model
 		'name',
 		'capacity',
 		'type',
+        'foto_laboratorium',
 		'description'
 	];
 

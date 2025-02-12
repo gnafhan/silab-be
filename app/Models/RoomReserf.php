@@ -36,7 +36,7 @@ class RoomReserf extends Model
 		'room_id' => 'int',
 		'start_time' => 'datetime',
 		'end_time' => 'datetime',
-		'is_approved' => 'bool'
+		// 'is_approved' => 'bool'
 	];
 
 	protected $fillable = [
@@ -47,13 +47,13 @@ class RoomReserf extends Model
 		'email',
 		'is_approved',
 		'no_wa',
-		'needs'
+		'needs',
+		 'name'
 	];
 
 	public function room()
 	{
-		return $this->belongsTo(Room::class);
-	}
+		return $this->belongsTo(Room::class, 'room_id');	}
 
 	public function schedule(){
         return $this->hasMany(Schedule::class, 'room_id');

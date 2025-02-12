@@ -37,7 +37,7 @@ class LaboratoriumController extends Controller
 
     public function getScheduleByRoom($id){
         $jadwal = Room::with('schedules')->find($id);
- 
+
         if(!$jadwal){
             return response()->json(["message"=> "Jadwal tidak ditemukan"]);
         }
@@ -47,6 +47,65 @@ class LaboratoriumController extends Controller
             "data"=>$jadwal
         ]);
     }
+
+    public function allReserve(){
+        $reserves = RoomReserf::with('room')->get();
+    
+        if ($reserves->isEmpty()) {
+            return response()->json([
+                "message" => "Tidak ada jadwal reservasi saat ini",
+                "data" => []
+            ]);
+        }
+    
+        return response()->json([
+            "message" => "Berhasil mengambil history reservasi",
+            "data" => $reserves
+        ]);
+    }
+
+    public function reservebyId($id)
+    {
+        // Gunakan with() untuk memuat relasi 'room'
+        $reserves = RoomReserf::with('room')->find($id);
+
+        if (!$reserves) {
+            return response()->json([
+                "message" => "Tidak ada jadwal reservasi saat ini",
+                "data" => []
+            ]);
+        }
+
+        return response()->json([
+            "message" => "Berhasil mengambil history reservasi",
+            "data" => $reserves
+        ]);
+    }
+
+    public function searchReservations($query = null)
+{
+    // If query is empty or null, fetch all reservations
+    if (empty($query)) {
+        $reservations = RoomReserf::with('room')->get();
+    } else {
+        // Existing search logic
+        $room = Room::where('name', 'LIKE', "%{$query}%")->first();
+
+        if (!$room) {
+            return response()->json([
+                'message' => 'Room not found',
+                'data' => []
+            ]);
+        }
+
+        $reservations = RoomReserf::with('room')->where('room_id', $room->id)->get();
+    }
+
+    return response()->json([
+        'message' => $reservations->isEmpty() ? 'No reservations found' : 'Reservations found',
+        'data' => $reservations
+    ]);
+}
 
     public function reserveByRoom($id){
         $reserves = RoomReserf::where('room_id', $id)->get();
@@ -75,11 +134,12 @@ class LaboratoriumController extends Controller
             ],
             'no_wa' => 'required|string|max:50',
             'needs' => 'required|string',
+            'name' => 'required|string'
         ]);
         // return $validatedData;
 
         $room = Room::find($validatedData['room_id']);
-        if(!$room){ 
+        if(!$room){
             return response()->json(["message"=> "Room tidak ditemukan"]);
         }
 
@@ -93,4 +153,46 @@ class LaboratoriumController extends Controller
             "data"=>$labReserve
         ]);
     }
+
+    public function approve($id)
+    {
+        $reserve = RoomReserf::find($id);
+        
+        if (!$reserve) {
+            return response()->json([
+                "message" => "Reservasi tidak ditemukan"
+            ], 404);
+        }
+
+        $reserve->update([
+            'is_approved' => 1
+        ]);
+
+        return response()->json([
+            "message" => "Reservasi berhasil disetujui",
+            "data" => $reserve
+        ]);
+    }
+
+    public function reject($id)
+    {
+        $reserve = RoomReserf::find($id);
+        
+        if (!$reserve) {
+            return response()->json([
+                "message" => "Reservasi tidak ditemukan"
+            ], 404);
+        }
+
+        $reserve->update([
+            'is_approved' => -1
+        ]);
+
+        return response()->json([
+            "message" => "Reservasi berhasil ditolak",
+            "data" => $reserve
+        ]);
+    }
 }
+
+

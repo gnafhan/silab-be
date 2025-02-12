@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\umum;
 
 use App\Http\Controllers\Controller;
+use App\Mail\ApproveInventory;
 use App\Mail\InventoryReservationConfirmation;
 use App\Models\Inventory;
 use App\Models\InventoryReserf;
@@ -10,33 +11,45 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class InventoryReserfController extends Controller
 {
+
     public function index(){
-        $inventories = Inventory::select('item_name', 'condition', DB::raw('COUNT(*) as count'))
-        ->groupBy('item_name', 'condition')
-        ->get()
-        ->groupBy('item_name')
-        ->map(function ($group) {
-            return $group->mapWithKeys(function ($item) {
-                return [$item->condition => $item->count];
-            });
-        });       
+        $inventories = Inventory::get();
 
         return response()->json([
-            "message"=> "Berhasil mengambil data inventaris",
+            "message"=> "Berhasil mengambil data inventory",
             "data"=>$inventories
         ]);
     }
+    
 
     public function getReserve(){
-        $reserves = InventoryReserf::get();
+        $reserves = InventoryReserf::with('inventory')->get();
  
         return response()->json([
             "message"=> "Berhasil mengambil data reservasi inventaris",
             "data"=>$reserves
+        ]);
+    }
+
+    public function reservebyId($id)
+    {
+        $reserves = InventoryReserf::with('inventory')->find($id);
+
+        if (!$reserves) {
+            return response()->json([
+                "message" => "Tidak ada jadwal reservasi saat ini",
+                "data" => []
+            ]);
+        }
+
+        return response()->json([
+            "message" => "Berhasil mengambil history reservasi",
+            "data" => $reserves
         ]);
     }
 
@@ -49,6 +62,7 @@ class InventoryReserfController extends Controller
             'email' => 'required|string|email|max:255',
             'no_wa' => 'required|string|max:50',
             'needs' => 'required|string',
+            'name' => 'required|string'
         ]);
 
         $inventory = Inventory::find($validatedData['inventory_id']);
@@ -59,11 +73,60 @@ class InventoryReserfController extends Controller
         $inventoryReserve = InventoryReserf::create($validatedData);
         $kalab = User::where('role', 'kaleb')->first();
 
-        Mail::to($kalab->email)->send(new InventoryReservationConfirmation($inventoryReserve, Auth::user()));
-
+        // Mail::to($kalab->email)->send(new InventoryReservationConfirmation($inventoryReserve, Auth::user()));
+        Log::info($inventoryReserve);
         return response()->json([
             "message"=> "Berhasil membuat reservasi inventaris",
             "data"=>$inventoryReserve
+        ]);
+    }
+
+    public function approve($id)
+    {
+        $reserve = InventoryReserf::with('inventory')->find($id);
+        
+        if (!$reserve) {
+            return response()->json([
+                "message" => "Reservasi tidak ditemukan"
+            ], 404);
+        }
+
+        $reserve->is_approved = 1;
+        $reserve->save();
+
+        // Send email notifications
+        $recipients = [env('LABORAN_1_EMAIL'), env('LABORAN_2_EMAIL')];
+        foreach ($recipients as $email) {
+            try {
+                $result = Mail::to($email)->send(new ApproveInventory($reserve->inventory, $reserve));
+                // Log::info($result);
+            } catch (\Exception $e) {
+                Log::error($e->getMessage());
+            }
+        }
+
+        return response()->json([
+            "message" => "Berhasil menyetujui reservasi",
+            "data" => $reserve
+        ]);
+    }
+
+    public function reject($id)
+    {
+        $reserve = InventoryReserf::find($id);
+        
+        if (!$reserve) {
+            return response()->json([
+                "message" => "Reservasi tidak ditemukan"
+            ], 404);
+        }
+
+        $reserve->is_approved = -1;
+        $reserve->save();
+
+        return response()->json([
+            "message" => "Berhasil menolak reservasi",
+            "data" => $reserve
         ]);
     }
 }
