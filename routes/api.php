@@ -131,4 +131,7 @@ Route::middleware(['auth:sanctum', 'verified', 'admin'])->group(function () {
     // Schedule route
     Route::get('schedules', [JadwalController::class, 'getSchedule'])->name('schedule');
     Route::get('schedules/{id}', [JadwalController::class, 'getScheduleByRoom'])->name('schedule.detail');
+    Route::get('schedule/{id}', [JadwalController::class, 'show'])->name('schedule.detail');
+    Route::post('schedules/reserve/{id}', [JadwalController::class, 'update'])->name('schedule.edit');
+    Route::post('schedules/reserve', [JadwalController::class, 'store'])->name('schedule.reserve');
 });
