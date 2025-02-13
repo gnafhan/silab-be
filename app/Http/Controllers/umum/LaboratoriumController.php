@@ -37,7 +37,7 @@ class LaboratoriumController extends Controller
 
     public function getScheduleByRoom($id){
         $jadwal = Room::with('schedules')->find($id);
- 
+
         if(!$jadwal){
             return response()->json(["message"=> "Jadwal tidak ditemukan"]);
         }
@@ -125,11 +125,12 @@ class LaboratoriumController extends Controller
             'email' => 'required|string|email|max:255',
             'no_wa' => 'required|string|max:50',
             'needs' => 'required|string',
+            'name' => 'required|string'
         ]);
         // return $validatedData;
 
         $room = Room::find($validatedData['room_id']);
-        if(!$room){ 
+        if(!$room){
             return response()->json(["message"=> "Room tidak ditemukan"]);
         }
 
@@ -143,4 +144,46 @@ class LaboratoriumController extends Controller
             "data"=>$labReserve
         ]);
     }
+
+    public function approve($id)
+    {
+        $reserve = RoomReserf::find($id);
+        
+        if (!$reserve) {
+            return response()->json([
+                "message" => "Reservasi tidak ditemukan"
+            ], 404);
+        }
+
+        $reserve->update([
+            'is_approved' => 1
+        ]);
+
+        return response()->json([
+            "message" => "Reservasi berhasil disetujui",
+            "data" => $reserve
+        ]);
+    }
+
+    public function reject($id)
+    {
+        $reserve = RoomReserf::find($id);
+        
+        if (!$reserve) {
+            return response()->json([
+                "message" => "Reservasi tidak ditemukan"
+            ], 404);
+        }
+
+        $reserve->update([
+            'is_approved' => -1
+        ]);
+
+        return response()->json([
+            "message" => "Reservasi berhasil ditolak",
+            "data" => $reserve
+        ]);
+    }
 }
+
+

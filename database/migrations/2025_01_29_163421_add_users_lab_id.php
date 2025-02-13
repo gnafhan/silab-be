@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddFirstLastNameToUsersTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
@@ -12,8 +12,9 @@ class AddFirstLastNameToUsersTable extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('first_name')->after('username');
-            $table->string('last_name')->after('first_name');
+            $table->unsignedBigInteger('lab_id')->nullable();
+
+            $table->foreign('lab_id')->references('id')->on('labolatories')->onDelete('set null');
         });
     }
 
@@ -23,8 +24,8 @@ class AddFirstLastNameToUsersTable extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('first_name');
-            $table->dropColumn('last_name');
+            $table->dropForeign(['lab_id']);
+            $table->dropColumn('lab_id');
         });
     }
-}
+};

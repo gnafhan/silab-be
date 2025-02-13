@@ -17,6 +17,7 @@ return new class extends Migration
             $table->integer('capacity')->nullable();
             $table->enum('type',['gudang', 'laboratorium']);
             $table->text('description');
+            $table->string('foto_laboratorium')->nullable();
             $table->timestamps();
         });
     }
