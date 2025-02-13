@@ -51,20 +51,20 @@ class UserSeeder extends Seeder
                     'email' => 'umum@mail.ugm.ac.id',
                     'email_verified_at' => now(),
                     'password' => bcrypt('password'),
-                'role' => 'umum',
-                'login_status' => 'off',
-                'last_login' => null,
-                'remember_token' => null,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'username' => 'umum_user1',
-                'first_name' => 'Umum1',
-                'last_name' => 'User1',
-                'email' => 'umum1@mail.ugm.ac.id',
-                'email_verified_at' => now(),
-                'password' => bcrypt('password'),
+                    'role' => 'umum',
+                    'login_status' => 'off',
+                    'last_login' => null,
+                    'remember_token' => null,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ],
+                [
+                    'username' => 'umum_user1',
+                    'first_name' => 'Umum1',
+                    'last_name' => 'User1',
+                    'email' => 'umum1@mail.ugm.ac.id',
+                    'email_verified_at' => now(),
+                    'password' => bcrypt('password'),
                     'role' => 'umum',
                     'login_status' => 'off',
                     'last_login' => null,
@@ -106,6 +106,6 @@ class UserSeeder extends Seeder
                 ],
             ]);
         }
-        
+
     }
 }
