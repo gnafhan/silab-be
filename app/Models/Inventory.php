@@ -34,7 +34,13 @@ class Inventory extends Model
 		'item_name',
 		'no_item',
 		'condition',
-		'information'
+		 'alat/bhp',
+        'no_inv_ugm',
+		'information',
+		'room_id',
+        'labolatory_id',
+        'created_by',
+        'updated_by'
 	];
 
 	public function inventory_reserves()
@@ -48,4 +54,29 @@ class Inventory extends Model
 					->withPivot('id')
 					->withTimestamps();
 	}
+
+    public function room()
+    {
+        return $this->belongsTo(Room::class);
+    }
+
+    public function laboratory()
+    {
+        return $this->belongsTo(Labolatory::class, 'labolatory_id');
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updater()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    public function itemPengadaans()
+    {
+        return $this->hasMany(ItemPengadaan::class);
+    }
 }
