@@ -10,6 +10,7 @@ use App\Models\RoomReserve;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 class LaboratoriumController extends Controller
@@ -117,6 +118,8 @@ class LaboratoriumController extends Controller
     }
 
     public function labReserve(Request $request){
+        Log::info($request->all());
+        try {
         $validatedData = $request->validate([
             'room_id' => 'required|integer',
             'start_time' => 'required|date',
@@ -136,6 +139,13 @@ class LaboratoriumController extends Controller
             'needs' => 'required|string',
             'name' => 'required|string'
         ]);
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        Log::error($e->errors());
+        return response()->json([
+            "message" => "Gagal membuat reservasi laboratorium",
+            "errors" => $e->errors()
+        ], 400);
+    }
         // return $validatedData;
 
         $room = Room::find($validatedData['room_id']);
