@@ -65,6 +65,7 @@ Route::group([], function(){
 
     Route::get('inventory', [InventoryReserfController::class, 'index'])->name('inventory');
     Route::get('inventory/reserve', [InventoryReserfController::class, 'getReserve'])->name('inventory.reserves');
+    Route::post('inventory/reserve', [InventoryReserfController::class, 'inventoryReserve'])->name('inventory.reserve');
 
     //student
     Route::apiResource('studentCount', StudentController::class);
@@ -103,7 +104,6 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
     Route::get('schedule/{id}', [JadwalController::class, 'show'])->name('schedule.detail');
     Route::post('schedules/reserve/{id}', [JadwalController::class, 'update'])->name('schedule.edit');
     Route::post('schedules/reserve', [JadwalController::class, 'store'])->name('schedule.reserve');
-    Route::post('inventory/reserve', [InventoryReserfController::class, 'inventoryReserve'])->name('inventory.reserve');
 });
 
 // Rules
