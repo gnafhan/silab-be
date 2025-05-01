@@ -6,12 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\Room;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
 
 class RoomController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Room::query();
+        $query = Room::with('creator');
 
         if ($request->has('search')) {
             $search = $request->search;
@@ -46,6 +47,10 @@ class RoomController extends Controller
             'description' => 'required|string',
         ]);
 
+        // Add creator info
+        $validated['created_by'] = Auth::id();
+        $validated['updated_by'] = Auth::id();
+
         Room::create($validated);
 
         return redirect()->route('room.index')
@@ -67,6 +72,9 @@ class RoomController extends Controller
             'type' => 'required|in:gudang,laboratorium',
             'description' => 'required|string',
         ]);
+
+        // Add updater info
+        $validated['updated_by'] = Auth::id();
 
         $room->update($validated);
 

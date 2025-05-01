@@ -47,4 +47,20 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+    
+    /**
+     * Get the rooms created by this user.
+     */
+    public function createdRooms()
+    {
+        return $this->hasMany(Room::class, 'created_by');
+    }
+    
+    /**
+     * Get the rooms updated by this user.
+     */
+    public function updatedRooms()
+    {
+        return $this->hasMany(Room::class, 'updated_by');
+    }
 }

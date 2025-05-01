@@ -20,10 +20,14 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $description
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
+ * @property int|null $created_by
+ * @property int|null $updated_by
  *
  * @property Collection|Inventory[] $inventories
  * @property Collection|RoomReserf[] $room_reserves
  * @property Collection|Schedule[] $schedules
+ * @property User|null $creator
+ * @property User|null $updater
  *
  * @package App\Models
  */
@@ -32,7 +36,9 @@ class Room extends Model
 	protected $table = 'rooms';
 
 	protected $casts = [
-		'capacity' => 'int'
+		'capacity' => 'int',
+        'created_by' => 'int',
+        'updated_by' => 'int'
 	];
 
 	protected $fillable = [
@@ -40,7 +46,9 @@ class Room extends Model
 		'capacity',
 		'type',
         'foto_laboratorium',
-		'description'
+		'description',
+        'created_by',
+        'updated_by'
 	];
 
 	public function inventories()
@@ -59,4 +67,14 @@ class Room extends Model
 	{
 		return $this->hasMany(Schedule::class);
 	}
+    
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+    
+    public function updater()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
 }

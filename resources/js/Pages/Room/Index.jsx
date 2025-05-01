@@ -80,6 +80,7 @@ export default function Index({ auth, rooms, filters }) {
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kapasitas</th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tipe</th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Deskripsi</th>
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Dibuat Oleh</th>
                                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
                                         </tr>
                                     </thead>
@@ -91,6 +92,11 @@ export default function Index({ auth, rooms, filters }) {
                                                 <td className="px-6 py-4">{room.capacity}</td>
                                                 <td className="px-6 py-4 capitalize">{room.type}</td>
                                                 <td className="px-6 py-4">{room.description}</td>
+                                                <td className="px-6 py-4">
+                                                    {room.creator ? 
+                                                        `${room.creator.first_name} ${room.creator.last_name}` : 
+                                                        'N/A'}
+                                                </td>
                                                 <td className="px-6 py-4 space-x-2">
                                                     <Link
                                                         href={route('room.edit', room.id)}

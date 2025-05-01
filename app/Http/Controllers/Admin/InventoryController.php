@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\InventoryGallery;
 use Illuminate\Auth\Access\Gate;
 use Illuminate\Routing\Route;
+use Illuminate\Support\Facades\DB;
 
 class InventoryController extends Controller
 {
@@ -90,7 +91,18 @@ class InventoryController extends Controller
 
         $validated = $request->validate([
             'item_name' => 'required|string|max:255',
-            'no_item' => 'required|string|max:255',
+            'no_item' => [
+                'required',
+                'string',
+                'max:255',
+                function ($attribute, $value, $fail) {
+                    // Check if an active (not soft-deleted) inventory with the same no_item exists
+                    $exists = Inventory::where('no_item', $value)->whereNull('deleted_at')->exists();
+                    if ($exists) {
+                        $fail('Nomor barang sudah digunakan. Silakan gunakan nomor barang yang lain.');
+                    }
+                },
+            ],
             'condition' => 'required|string',
             'alat/bhp' => 'required|string',
             'no_inv_ugm' => 'required|string',
@@ -106,6 +118,26 @@ class InventoryController extends Controller
                 },
             ],
         ]);
+
+        // Check if there's a soft-deleted inventory with the same no_item
+        $existingTrashed = Inventory::onlyTrashed()
+            ->where('no_item', $validated['no_item'])
+            ->first();
+            
+        if ($existingTrashed) {
+            try {
+                // Use our new method to safely delete the inventory with all its relations
+                $existingTrashed->forceDeleteWithRelated();
+                
+                Log::info("Force deleted soft-deleted inventory ID {$existingTrashed->id} with no_item: {$validated['no_item']}");
+            } catch (\Exception $e) {
+                Log::error("Error force deleting inventory: " . $e->getMessage());
+                // Continue with the creation process, but with a new no_item
+                // Append a timestamp to make it unique
+                $validated['no_item'] = $validated['no_item'] . '-' . time();
+                Log::info("Modified no_item to: {$validated['no_item']}");
+            }
+        }
 
         $validated['created_by'] = auth()->id();
         $validated['updated_by'] = auth()->id();
@@ -161,7 +193,23 @@ class InventoryController extends Controller
 
             $validated = $request->validate([
                 'item_name' => 'required|string|max:255',
-                'no_item' => 'required|string|max:255',
+                'no_item' => [
+                    'required',
+                    'string',
+                    'max:255',
+                    function ($attribute, $value, $fail) use ($inventory) {
+                        // Check if another active inventory with the same no_item exists
+                        // Exclude the current inventory being updated
+                        $exists = Inventory::where('no_item', $value)
+                            ->where('id', '!=', $inventory->id)
+                            ->whereNull('deleted_at')
+                            ->exists();
+                        
+                        if ($exists) {
+                            $fail('Nomor barang sudah digunakan oleh barang lain. Silakan gunakan nomor barang yang lain.');
+                        }
+                    },
+                ],
                 'condition' => 'required|string',
                 'alat/bhp' => 'required|string',
                 'no_inv_ugm' => 'required|string',
@@ -232,20 +280,49 @@ class InventoryController extends Controller
         ]);
 
         try {
-            Excel::import(new InventoryImport, $request->file('file'));
+            $import = new InventoryImport;
+            Excel::import($import, $request->file('file'));
+            
             return redirect()->route('inventory.index')
                 ->with('message', 'Data imported successfully');
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
             $failures = $e->failures();
-            $errors = collect($failures)->map(function ($failure) {
-                return "Row {$failure->row()}: {$failure->errors()[0]}";
-            })->join(', ');
-            Log::error('Import failed: ' . $errors);
+            
+            // Check if there are validation errors for no_item specifically
+            $noItemErrors = [];
+            $otherErrors = [];
+            
+            foreach ($failures as $failure) {
+                $rowErrors = $failure->errors();
+                $row = $failure->row();
+                
+                foreach ($rowErrors as $error) {
+                    if (str_contains($error, 'Nomor barang')) {
+                        $noItemErrors[] = "Row {$row}: {$error}";
+                    } else {
+                        $otherErrors[] = "Row {$row}: {$error}";
+                    }
+                }
+            }
+            
+            // Format the errors for display
+            $formattedErrors = [];
+            
+            if (!empty($noItemErrors)) {
+                $formattedErrors[] = "Beberapa barang tidak diimpor karena nomor barang duplikat: " . implode(', ', $noItemErrors);
+            }
+            
+            if (!empty($otherErrors)) {
+                $formattedErrors[] = "Kesalahan validasi lainnya: " . implode(', ', $otherErrors);
+            }
+            
+            $errorMessage = !empty($formattedErrors) ? implode("\n", $formattedErrors) : "Import failed with validation errors";
+            Log::error('Import failed: ' . $errorMessage);
 
-            return back()->withErrors('error', "Import failed: {$errors}");
+            return back()->withErrors(['error' => $errorMessage]);
         } catch (\Exception $e) {
             Log::error('Import failed: ' . $e->getMessage());
-            return back()->withErrors('error', 'Import failed: ' . $e->getMessage());
+            return back()->withErrors(['error' => 'Import failed: ' . $e->getMessage()]);
         }
     }
 

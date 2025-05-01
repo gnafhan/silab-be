@@ -4,6 +4,8 @@ namespace App\Imports;
 
 use App\Models\Inventory;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
@@ -35,6 +37,42 @@ class InventoryImport implements ToModel, WithHeadingRow, WithValidation, WithMu
         Log::info('Processing inventory row:', $row);
 
         try {
+            // Check if an active inventory with the same no_item already exists
+            $exists = Inventory::where('no_item', $row['no_item'])
+                ->whereNull('deleted_at')
+                ->exists();
+                
+            if ($exists) {
+                // Skip this row or throw a validation exception
+                Log::warning("Skipping row with duplicate no_item: {$row['no_item']}");
+                throw new \Maatwebsite\Excel\Validators\ValidationException(
+                    \Illuminate\Validation\ValidationException::withMessages([
+                        'no_item' => ["Nomor barang '{$row['no_item']}' sudah digunakan. Barang tidak akan diimpor."]
+                    ]),
+                    []
+                );
+            }
+            
+            // Check if there's a soft-deleted inventory with the same no_item
+            $existingTrashed = Inventory::onlyTrashed()
+                ->where('no_item', $row['no_item'])
+                ->first();
+                
+            if ($existingTrashed) {
+                try {
+                    // Use our new method to safely delete the inventory with all its relations
+                    $existingTrashed->forceDeleteWithRelated();
+                    
+                    Log::info("Force deleted soft-deleted inventory ID {$existingTrashed->id} with no_item: {$row['no_item']}");
+                } catch (\Exception $e) {
+                    Log::error("Error force deleting inventory: " . $e->getMessage());
+                    // Continue with the creation process, but with a new no_item
+                    // Append a timestamp to make it unique
+                    $row['no_item'] = $row['no_item'] . '-' . time();
+                    Log::info("Modified no_item to: {$row['no_item']}");
+                }
+            }
+            
             $inventory = new Inventory([
                 'item_name' => $row['nama_item'],
                 'no_item' => $row['no_item'],
@@ -51,16 +89,11 @@ class InventoryImport implements ToModel, WithHeadingRow, WithValidation, WithMu
             Log::info('Created inventory:', $inventory->toArray());
             return $inventory;
         } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
-            $failures = $e->failures();
-            $errors = collect($failures)->map(function ($failure) {
-                return "Row {$failure->row()}: {$failure->errors()[0]}";
-            })->join(', ');
-            Log::error('Import failed: ' . $errors);
-
-            return back()->withErrors('error', "Import failed: {$errors}");
+            // Re-throw the validation exception to be handled by the importer
+            throw $e;
         } catch (\Exception $e) {
             Log::error('Import failed: ' . $e->getMessage());
-            return back()->withErrors('error', 'Import failed: ' . $e->getMessage());
+            throw new \Exception('Import failed: ' . $e->getMessage());
         }
     }
 
@@ -86,7 +119,16 @@ class InventoryImport implements ToModel, WithHeadingRow, WithValidation, WithMu
     {
         return [
             '*.nama_item' => 'required',
-            '*.no_item' => 'required',
+            '*.no_item' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    // The uniqueness check is already done in the model method
+                    // This is just an extra validation for the no_item format if needed
+                    if (empty($value)) {
+                        $fail('Nomor barang tidak boleh kosong.');
+                    }
+                }
+            ],
             '*.kondisi' => 'required|in:Baik,Rusak',
             '*.alat_bhp' => 'required|in:Alat,BHP',
             '*.no_inv_ugm' => 'required',
