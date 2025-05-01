@@ -1,0 +1,26 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Inventory Management System
+
+## Key Models
+- [Inventory Model](mdc:app/Models/Inventory.php): The main model for inventory items with relationships to rooms, laboratories, and users.
+- User Model: Stores user information with fields like first_name and last_name.
+
+## Controllers
+- [InventoryController](mdc:app/Http/Controllers/Admin/InventoryController.php): Handles CRUD operations for inventory items including index, create, store, edit, update, delete.
+
+## Frontend Components
+- [Inventory Index Page](mdc:resources/js/Pages/Inventory/Index.jsx): Displays the inventory list with filtering, pagination, and management options.
+
+## Data Relationships
+- Inventory belongsTo Laboratory
+- Inventory belongsTo Room
+- Inventory belongsTo User (as creator)
+- Inventory hasMany InventoryGallery
+
+## UI Display Guidelines
+- When displaying a user's name, combine first_name and last_name: `${user.first_name} ${user.last_name}`
+- When loading inventory data, always include the related models: `with(['room', 'laboratory', 'creator', 'galleries'])`
