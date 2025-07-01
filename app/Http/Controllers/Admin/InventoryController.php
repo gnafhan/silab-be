@@ -362,9 +362,7 @@ class InventoryController extends Controller
 
     public function welcome(Request $request)
     {
-        $query = Inventory::with(['room', 'laboratory', 'creator', 'galleries' => function ($q) {
-            $q->latest()->take(1);
-        }]);
+        $query = Inventory::with(['room', 'laboratory', 'creator', 'galleries']);
 
         // dd($query->get());
 
