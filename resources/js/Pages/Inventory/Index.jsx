@@ -172,7 +172,6 @@ export default function Index({ auth, inventories, laboratories, filters }) {
                                     </thead>
                                     <tbody className="bg-white divide-y divide-gray-200">
                                         {inventories.data.map((inventory) => {
-                                            console.log(inventory);
                                             return(
                                             <tr key={inventory.id}>
                                                 <td className="px-6 py-4">
