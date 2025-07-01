@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, Link, router } from '@inertiajs/react';
-import { Edit, Trash2 } from 'lucide-react';
+import { Edit, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
 import debounce from 'lodash/debounce';
+import { useForceHttps } from '@/hooks/useForceHttps';
 
 export default function Index({ auth, rooms, filters }) {
     const [search, setSearch] = useState(filters.search || '');
@@ -118,6 +119,74 @@ export default function Index({ auth, rooms, filters }) {
                                     </tbody>
                                 </table>
                             </div>
+
+                            {/* Pagination */}
+                            {rooms.links && (
+                                <div className="mt-6">
+                                    <div className="flex items-center justify-between">
+                                        <div className="text-sm text-gray-700">
+                                            Menampilkan {rooms.from} sampai {rooms.to} dari {rooms.total} hasil
+                                        </div>
+                                        <div className="flex items-center space-x-2">
+                                            <button
+                                                onClick={() => {
+                                                    if (rooms.prev_page_url) {
+                                                        router.get(useForceHttps(rooms.prev_page_url));
+                                                    }
+                                                }}
+                                                className={`inline-flex items-center px-3 py-2 rounded-md ${
+                                                    !rooms.prev_page_url
+                                                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                                        : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
+                                                }`}
+                                                disabled={!rooms.prev_page_url}
+                                            >
+                                                <ChevronLeft className="w-4 h-4 mr-1" />
+                                                <span>Sebelumnya</span>
+                                            </button>
+
+                                            {/* Numbered Pages */}
+                                            <div className="flex space-x-1">
+                                                {rooms.links.slice(1, -1).map((link, i) => (
+                                                    <button
+                                                        key={i}
+                                                        onClick={() => {
+                                                            if (link.url) {
+                                                                router.get(useForceHttps(link.url));
+                                                            }
+                                                        }}
+                                                        className={`px-3 py-2 rounded-md ${
+                                                            link.active
+                                                                ? 'bg-blue-500 text-white'
+                                                                : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
+                                                        } ${!link.url && 'opacity-50 cursor-not-allowed'}`}
+                                                        disabled={!link.url}
+                                                    >
+                                                        {link.label}
+                                                    </button>
+                                                ))}
+                                            </div>
+
+                                            <button
+                                                onClick={() => {
+                                                    if (rooms.next_page_url) {
+                                                        router.get(useForceHttps(rooms.next_page_url));
+                                                    }
+                                                }}
+                                                className={`inline-flex items-center px-3 py-2 rounded-md ${
+                                                    !rooms.next_page_url
+                                                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                                        : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-300'
+                                                }`}
+                                                disabled={!rooms.next_page_url}
+                                            >
+                                                <span>Berikutnya</span>
+                                                <ChevronRight className="w-4 h-4 ml-1" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

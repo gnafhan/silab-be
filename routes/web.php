@@ -44,6 +44,8 @@ Route::middleware(['auth', HandleInertiaRequests::class])->group(function () {
     // Pengadaan Routes
     Route::get('pengadaan/template', [PengadaanController::class, 'downloadTemplate'])->name('pengadaan.template');
     Route::post('pengadaan/import', [PengadaanController::class, 'import'])->name('pengadaan.import');
+    Route::get('pengadaan/create', [PengadaanController::class, 'create'])->name('pengadaan.create');
+    Route::post('pengadaan/store', [PengadaanController::class, 'store'])->name('pengadaan.store');
     Route::get('/pengadaan/{pengadaan}', [PengadaanController::class, 'show'])->name('pengadaan.show');
     Route::get('/pengadaan/{pengadaan}/edit-inventory', [PengadaanController::class, 'editInventory'])->name('pengadaan.edit-inventory');
     Route::post('/pengadaan/{pengadaan}/update-inventory', [PengadaanController::class, 'updateInventory'])->name('pengadaan.update-inventory');

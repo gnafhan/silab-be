@@ -24,13 +24,9 @@ class InventoryController extends Controller
     {
         $user = Auth::user();
         if ($user->role === 'laboran') {
-            $query = Inventory::with(['room', 'laboratory', 'creator', 'galleries' => function ($q) {
-                $q->latest()->take(1);
-            }]);
+            $query = Inventory::with(['room', 'laboratory', 'creator', 'galleries']);
         } else {
-            $query = Inventory::with(['room', 'laboratory', 'creator', 'galleries' => function ($q) {
-                $q->latest()->take(1);
-            }]);
+            $query = Inventory::with(['room', 'laboratory', 'creator', 'galleries']);
         }
 
         // Search functionality

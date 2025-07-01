@@ -171,17 +171,25 @@ export default function Index({ auth, inventories, laboratories, filters }) {
                                         </tr>
                                     </thead>
                                     <tbody className="bg-white divide-y divide-gray-200">
-                                        {inventories.data.map((inventory) => (
+                                        {inventories.data.map((inventory) => {
+                                            console.log(inventory);
+                                            return(
                                             <tr key={inventory.id}>
                                                 <td className="px-6 py-4">
                                                     <div className="flex items-center space-x-4">
-                                                        <img 
-                                                            src={inventory.galleries?.[0]?.filepath 
-                                                                ? `/storage/${inventory.galleries[0].filepath}`
-                                                                : '/placeholder-image.jpg'} 
-                                                            alt={inventory.item_name}
-                                                            className="w-16 h-16 object-cover rounded"
-                                                        />
+                                                        {inventory.galleries && inventory.galleries.length > 0 && inventory.galleries[0]?.filepath ? (
+                                                            <img
+                                                                src={`/storage/${inventory.galleries[0].filepath}`}
+                                                                alt={inventory.item_name}
+                                                                className="w-16 h-16 object-cover rounded"
+                                                            />
+                                                        ) : (
+                                                            <img
+                                                                src="/placeholder-image.jpg"
+                                                                alt={inventory.item_name}
+                                                                className="w-16 h-16 object-cover rounded"
+                                                            />
+                                                        )}
                                                         <span>{inventory.item_name}</span>
                                                     </div>
                                                 </td>
@@ -216,7 +224,7 @@ export default function Index({ auth, inventories, laboratories, filters }) {
                                                     ) : null}
                                                 </td>
                                             </tr>
-                                        ))}
+                                        )})}
                                     </tbody>
                                 </table>
                             </div>
